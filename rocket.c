@@ -3,6 +3,13 @@
 #include "rocket.h"
 #include "driverlib.h"
 
+// (slau132y) volatile should be used when variable modified 
+// by non standard ctrl flow (like interrupts)
+/*
+ * modified by RADIO_DIO interrupt to indicate radio done w/ Tx or Rx
+ */
+volatile uint8_t radio_ready = 0;
+
 // TODO: need to make sure to set clock phase & polarity correctly
 // TODO: ensure doesn't violate minimal timings
 /*
@@ -107,7 +114,9 @@ uint8_t spi_rocket_receive(spi_device device)
 /*
  * USCI_A0 Interrupt Table
  */
-#pragma vector = USCI_A0_VECTOR __interrupt void USCI_A0_ISR(void) {
+#pragma vector = USCI_A0_VECTOR __interrupt 
+void USCI_A0_ISR(void) 
+{
 	switch(__even_in_range(UCA0IV,4)) {
 		case 0x00: // Vector 0: No interrupts
 			break;
@@ -122,7 +131,9 @@ uint8_t spi_rocket_receive(spi_device device)
 /*
  * USCI_B0 Interrupt Table
  */
-#pragma vector = USCI_B0_VECTOR __interrupt void USCI_B0_ISR(void) {
+#pragma vector = USCI_B0_VECTOR __interrupt 
+void USCI_B0_ISR(void) 
+{
 	switch(__even_in_range(UCB0IV,4)) {
 		case 0x00: // Vector 0: No interrupts
 			break;
@@ -133,6 +144,11 @@ uint8_t spi_rocket_receive(spi_device device)
 		default: break;
 	}
 }
+
+
+/*
+ * Port 1 Vector 
+ */
 
 // TODO: a lot of the radio tx & rx code can probably be placed into init
 // TODO: give all the params bytes a name?
@@ -217,10 +233,12 @@ void radio_transmit(uint8_t n, uint8_t* data)
 	params[1] = 0x42;
 	params[2] = 0x40;
 	spi_rocket_transmit(RADIO, SetTx, 3, params);
-	// TODO: implement wait until interrupt
+	// TODO: finish implementing interrupt handling for RADIO_DIO
+	while (!radio_ready);
 	params[0] = 0x02; // clear Timeout IRQ
 	params[1] = 0x01; // clear TxDone IRQ
 	spi_rocket_transmit(RADIO, ClearIrqStatus, 2, params);
+	radio_ready = 0;
 }
 
 // TODO: implement Radio Rx
@@ -251,8 +269,13 @@ void radio_receive()
 	spi_rocket_transmit(RADIO, SetDioIrqParams, 0, NULL);
 	spi_rocket_transmit(RADIO, WriteRegister, 0, NULL);
 	spi_rocket_transmit(RADIO, SetRx, 0, NULL);
-	// wait()
+	// TODO: finish implementing interrupt handling for RADIO_DIO
+	while (!radio_ready);
 	spi_rocket_transmit(RADIO, GetIrqStatus, 0, NULL);
 	spi_rocket_transmit(RADIO, ClearIrqStatus, 0, NULL);
 	spi_rocket_transmit(RADIO, GetRxBufferStatus, 0, NULL);
+	radio_ready = 0;
 }
+
+// TODO: Handle interrupt from RADIO_DIO
+// #pragma INTERRUPT ( func_name )

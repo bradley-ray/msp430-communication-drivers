@@ -56,5 +56,6 @@ void radio_init();
 uint8_t is_radio_busy();
 void radio_transmit(uint8_t n, uint8_t* data);
 void radio_receive();
+uint8_t radio_check_irq();
 
 #endif
