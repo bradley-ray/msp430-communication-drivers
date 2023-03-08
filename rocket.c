@@ -194,17 +194,11 @@ void radio_transmit(uint8_t n, uint8_t* data)
 		params[i] = 0x00;
 	}
 	spi_rocket_transmit(RADIO, SetDioIrqParams, 8, params);
-	params[0] = 0x06; // upper byte of sync word address
-	params[1] = 0xc0; // lower byte of sync word address
-	params[2] = 'e';  // "elegcsce" as a sync word?
-	params[3] = 'l';
-	params[4] = 'e';
-	params[5] = 'g';
-	params[6] = 'c';
-	params[7] = 's';
-	params[8] = 'c';
-	params[9] = 'e';
-	spi_rocket_transmit(RADIO, WriteRegister, 10, params);
+	params[0] = 0x07; // upper byte of sync word address
+	params[1] = 0x40; // lower byte of sync word address
+	params[2] = 0x14; // set syncword/lora to private network
+	params[3] = 0x24;
+	spi_rocket_transmit(RADIO, WriteRegister, 4, params);
 	params[0] = 0x0f;
 	params[1] = 0x42;
 	params[2] = 0x40;
