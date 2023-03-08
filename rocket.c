@@ -23,8 +23,8 @@ int spi_rocket_init(spi_device device)
 			if (STATUS_FAIL == result) {
 				return result;
 			}
-			P2SEL &= ~BIT4 // set RADIO chip select low
-			P3SEL |= BIT0 + BIT1 + BIT2 // set P3.0,P3.1,P3.2 in spi mode
+			P2SEL &= ~BIT4; // set RADIO chip select low
+			P3SEL |= BIT0 + BIT1 + BIT2; // set P3.0,P3.1,P3.2 in spi mode
 			USCI_B_SPI_enable(USCI_B0_BASE);
 			// USCI_B_SPI_enableInterrupt(USCI_B0_BASE, UCTXIE); // enable tx interrupt
 			// USCI_B_SPI_enableInterrupt(USCI_B0_BASE, UCRXIE); // enable rx interrupt
@@ -41,9 +41,9 @@ int spi_rocket_init(spi_device device)
 			if (STATUS_FAIL == result) {
 				return result;
 			}
-			P2SEL &= ~BIT3 // set MEMORY chip select low
-			P2SEL |= BIT7 // set P2.7 to spi mode
-			P3SEL |= BIT3 + BIT4 // set P3.3, P3.4 in SPI Mode
+			P2SEL &= ~BIT3; // set MEMORY chip select low
+			P2SEL |= BIT7; // set P2.7 to spi mode
+			P3SEL |= BIT3 + BIT4; // set P3.3, P3.4 in SPI Mode
 			USCI_A_SPI_enable(USCI_A0_BASE);
 			// USCI_A_SPI_enableInterrupt(USCI_A0_BASE, UCTXIE); // enable tx interrupt
 			// USCI_A_SPI_enableInterrupt(USCI_A0_BASE, UCRXIE); // enable rx interrupt
@@ -122,7 +122,7 @@ uint8_t spi_rocket_receive(spi_device device)
  * USCI_B0 Interrupt Table
  */
 #pragma vector = USCI_B0_VECTOR __interrupt void USCI_B0_ISR(void) {
-	switch(__even_in_range(UCB0IV,18)) {
+	switch(__even_in_range(UCB0IV,4)) {
 		case 0x00: // Vector 0: No interrupts
 			break;
 		case 0x02: ... // Vector 2: UCRXIFG
