@@ -4,6 +4,7 @@
 #include "driverlib.h"
 
 // TODO: need to make sure to set clock phase & polarity correctly
+// TODO: ensure doesn't violate minimal timings
 /*
  * Initialize SPI for communication
  */
@@ -134,14 +135,27 @@ uint8_t spi_rocket_receive(spi_device device)
 }
 
 // TODO: a lot of the radio tx & rx code can probably be placed into init
+// TODO: give all the params bytes a name?
 // 			 (but don't do this until after Tx/Rx are working)
 /*
  * Initalize Radio
  */
 void radio_init()
 {
+	// TODO: does the pullup need to be set on the microcontroller?
+	P8DIR &= ~BIT2; // make sure RADIO_BUSY pin is set to input
 }
 
+/*
+ * Check if radio is busy
+ */
+uint8_t is_radio_busy()
+{
+	return P8IN &= BIT2;
+}
+
+// TODO: all writes cause RADIO_BUSY to go high, 
+// 				so need to wait until it goes low agian
 /*
  * Radio Tx Procedure
  * 		 1. SetStandBy() -- if not in STDBY_RC
