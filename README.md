@@ -4,6 +4,10 @@ Specifically for use in an electrical senior design project that includes the de
 
 Example uses found in `examples/` directory.
 
+Requirements:
+- code compose base includes for msp430
+- msp430 driverlib
+
 ## Rocket Board
 - 2 spi communication interfaces
   - 1 for communication with the transceiver module
